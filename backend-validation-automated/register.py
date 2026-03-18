@@ -2,12 +2,17 @@ import bcrypt
 from flask import Flask, redirect, render_template, request, session, url_for
 from form import RegisterForm
 from model.user import db, User
-
+import os
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://postgres:Nopassword%4003@localhost/test"
-)
+# app.config["SQLALCHEMY_DATABASE_URI"] = (
+#     "postgresql://postgres:Nopassword%4003@localhost/test"
+# )
+db_url = os.environ.get("DATABASE_URL")
+
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 db.init_app(app)
 
 with app.app_context():
